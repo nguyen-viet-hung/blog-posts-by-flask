@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Posts{% endblock %}</h1>
+  {% if g.user %}
+    <a class="action" href="{{ url_for('blog.create') }}">New</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% for post in posts %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ post['title'] }}</h1>
+          <!-- original code is show timestamp in UTC -->
+          <!-- <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d %H:%M:%S') }}</div> -->
+          <!--
+          Change code to show in local time:
+          - Provide id of division by loop index of for because the id is unique in HTML document. Here we use loop.index0 - 0 based
+          - Using javascript to convert UTC time to local time
+          - Set text of div based on the id of division
+           -->
+          <div id="post-{{ loop.index0 }}" class="about"></div>
+          <script>
+            var post_user = "{{ post['username'] }}";
+            var post_created = new Date("{{ post['created'].strftime('%Y-%m-%d %H:%M:%SZ') }}");
+            var post_days_ago = Math.floor((Date.now() - post_created) / 86400000);
+            var post_hour_ago = Math.floor(((Date.now() - post_created) % 86400000) / 3600000);
+            var post_info = "by " + post_user + " on " + post_created.toLocaleString("en-GB")
+              + ". " + post_days_ago.toString() + " days and " + post_hour_ago.toString() + " hours ago";
+            /*console.log(post_info);*/
+            document.getElementById("post-{{ loop.index0 }}").innerText = post_info;
+          </script>
+        </div>
+        {% if g.user['id'] == post['author_id'] %}
+          <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+        {% endif %}
+      </header>
+      <p class="body">{{ post['body'] }}</p>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
