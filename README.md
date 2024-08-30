@@ -26,6 +26,6 @@ This command will create a schema that is used by backend
 ## Execute the backend
 After initializing database, now we can run the backend using following command:
 ```shell
-$ flask --app flaskr run --debug
+$ flask --app flaskr run --debug --host 0.0.0.0
 ```
-and here you go.
+Now you can open the link [http://127.0.0.1:5000](http://127.0.0.1:5000) and here you go.
